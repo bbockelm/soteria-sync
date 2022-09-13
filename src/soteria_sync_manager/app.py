@@ -8,6 +8,7 @@ from flask_apscheduler import APScheduler
 
 import soteria_sync_manager.auth as auth
 import soteria_sync_manager.harbor_utils as harbor_utils
+import soteria_sync_manager.spider as spider
 import soteria_sync_manager.transform as transform
 
 app = Flask(__name__)
@@ -32,15 +33,20 @@ def spider_harbor_projects():
     project_filter = re.compile(app.config.get("PROJECT_FILTER", ".*"))
     repo_filter = re.compile(app.config.get("REPOSITORY_FILTER", ".*"))
 
+    print(f"Fetching credentials for harbor instance {harbor}")
     harbor_auth = auth.get_docker_creds(harbor)
 
     project_results = collections.defaultdict(set)
-    for project in harboor_utils.list_all_projects(base_api, auth=harbor_auth):
+    print("Listing all projects in harbor")
+    for project in harbor_utils.list_all_projects(base_api, auth=harbor_auth):
         if not project_filter.search(project):
+            print (f"Ignoring project {project} not matching filter")
             continue
-        results = spider.convert_project_to_singularity(harbor_hostname, project, repository_filter=repo_filter, auth=harbor_auth)
+        print(f"Converting project {project} to singularity")
+        results = spider.convert_project_to_singularity(harbor, project, repository_filter=repo_filter, auth=harbor_auth)
         for key, val in results.items():
             project_results[key].update(val)
+    print("Project processing is complete.")
 
     global last_spider_results
     last_spider_results = project_results
