@@ -1,0 +1,10 @@
+--- /usr/local/lib64/python3.6/site-packages/htcondor/_lock.py.orig	2022-05-20 12:51:18.507210486 +0000
++++ /usr/local/lib64/python3.6/site-packages/htcondor/_lock.py	2022-05-20 12:51:30.578238961 +0000
+@@ -37,6 +37,7 @@
+     htcondor.JobEventLog,
+     htcondor.JobEvent,
+     htcondor.SubmitResult,
++    htcondor.SecMan,
+     htcondor.Transaction.__enter__,  # avoids recursion (this method returns self!)
+ }
+ 
